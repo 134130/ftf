@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/134130/ftf/pkg/tree"
 	"github.com/134130/ftf/pkg/util"
+	"time"
 )
 
 type Cluster struct {
@@ -51,6 +52,7 @@ func (c *Cluster) HasPreview() bool {
 }
 
 func (c *Cluster) GetPreview() string {
+	time.Sleep(1 * time.Second)
 	return c.Preview
 }
 

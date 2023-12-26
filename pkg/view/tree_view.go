@@ -71,10 +71,12 @@ func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term
 	line := term.NewLine(maxLength, &term.Graphic{})
 	line.Append(strings.Repeat("  ", indent), &term.Graphic{})
 
-	if node.IsExpanded() {
-		line.Append("▼ ", &term.Graphic{})
-	} else {
-		line.Append("▶ ", &term.Graphic{})
+	if node.GetChildren() != nil && len(node.GetChildren()) > 0 {
+		if node.IsExpanded() {
+			line.Append("▼ ", &term.Graphic{})
+		} else {
+			line.Append("▶ ", &term.Graphic{})
+		}
 	}
 
 	name := node.GetName()

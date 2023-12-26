@@ -52,9 +52,9 @@ func (v *previewView) Render(p term.Position) []term.LineAppender {
 			preview = "loading..."
 			go func() {
 				preview = v.state.Cursor.GetPreview()
-				v.state.Rerender <- true
 				preview = strings.ReplaceAll(preview, "\t", "    ")
 				v.lastPreview = strings.Split(preview, "\n")
+				v.state.Rerender <- true
 			}()
 		} else {
 			preview = "no preview available"
