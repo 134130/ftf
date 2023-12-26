@@ -1,11 +1,11 @@
 package main
 
 import (
-	"ftf/internal/config"
-	"ftf/internal/model"
-	"ftf/internal/view"
-	"ftf/pkg/terminal"
-	"ftf/pkg/tree"
+	"github.com/134130/ftf/internal/model"
+	"github.com/134130/ftf/pkg/config"
+	"github.com/134130/ftf/pkg/terminal"
+	"github.com/134130/ftf/pkg/tree"
+	"github.com/134130/ftf/pkg/view"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )

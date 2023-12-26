@@ -2,8 +2,8 @@ package view
 
 import (
 	"fmt"
-	"ftf/internal/config"
-	term "ftf/pkg/terminal"
+	"github.com/134130/ftf/pkg/config"
+	term "github.com/134130/ftf/pkg/terminal"
 	"math"
 	"os/exec"
 	"strings"

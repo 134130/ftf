@@ -1,4 +1,4 @@
-module ftf
+module github.com/134130/ftf
 
 go 1.21.5
 

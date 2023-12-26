@@ -1,9 +1,9 @@
 package view
 
 import (
-	"ftf/internal/config"
-	term "ftf/pkg/terminal"
-	"ftf/pkg/tree"
+	"github.com/134130/ftf/pkg/config"
+	term "github.com/134130/ftf/pkg/terminal"
+	"github.com/134130/ftf/pkg/tree"
 	"math"
 	"strings"
 )

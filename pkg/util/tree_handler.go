@@ -1,7 +1,7 @@
 package util
 
 import (
-	"ftf/pkg/tree"
+	"github.com/134130/ftf/pkg/tree"
 )
 
 func TraverseTree(t tree.TreeHandler, f func(tree.TreeHandler, int) error) error {

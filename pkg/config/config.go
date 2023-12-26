@@ -1,6 +1,6 @@
 package config
 
-import term "ftf/pkg/terminal"
+import term "github.com/134130/ftf/pkg/terminal"
 
 type KeyBindings map[string][]string
 type Graphics map[string]*term.Graphic

@@ -1,6 +1,6 @@
 package terminal
 
-import "ftf/pkg/tree"
+import "github.com/134130/ftf/pkg/tree"
 
 type State struct {
 	Root   tree.TreeHandler
