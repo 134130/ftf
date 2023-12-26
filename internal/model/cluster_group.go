@@ -6,11 +6,12 @@ import (
 )
 
 type ClusterGroup struct {
-	UUID     string
-	Name     string
-	Parent   tree.TreeHandler
-	Children tree.TreeHandler //TODO implement me
-	expanded bool
+	UUID                    string
+	Name                    string
+	Parent                  tree.TreeHandler
+	Children                []tree.TreeHandler
+	expanded                bool
+	highlightMatchedIndexes []int
 }
 
 var _ tree.TreeHandler = (*ClusterGroup)(nil)
@@ -28,12 +29,20 @@ func (c *ClusterGroup) GetParent() tree.TreeHandler {
 }
 
 func (c *ClusterGroup) GetChildren() []tree.TreeHandler {
-	return nil
+	return c.Children
 }
 
 func (c *ClusterGroup) GetChildrenByName(name string) []tree.TreeHandler {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (c *ClusterGroup) GetHighlightMatchedIndexes() []int {
+	return c.highlightMatchedIndexes
+}
+
+func (c *ClusterGroup) SetHighlightMatchedIndexes(ints []int) {
+	c.highlightMatchedIndexes = ints
 }
 
 func (c *ClusterGroup) HasPreview() bool {

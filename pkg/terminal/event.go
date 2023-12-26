@@ -65,9 +65,9 @@ const (
 )
 
 const (
-	Tab   = CtrlI
-	Enter = CtrlM
-	Del   = 127
+	Tab       = CtrlI
+	Enter     = CtrlM
+	Backspace = 127
 )
 
 type EventSymbol int
@@ -177,8 +177,8 @@ func readEvents(r io.Reader, out chan Event, next chan bool) {
 				case in[0] <= 31:
 					out <- Event{Symbol: EventSymbol(in[0])}
 					in = in[1:]
-				case in[0] == Del:
-					out <- Event{Symbol: Del}
+				case in[0] == Backspace:
+					out <- Event{Symbol: Backspace}
 					in = in[1:]
 				case r != utf8.RuneError:
 					out <- Event{Symbol: Rune, Value: r}

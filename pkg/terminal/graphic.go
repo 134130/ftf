@@ -6,14 +6,22 @@ type Graphic struct {
 	FgColor ColorCoder
 	BgColor ColorCoder
 
-	Bold    bool
-	Reverse bool
+	Bold      bool
+	Italic    bool
+	Underline bool
+	Reverse   bool
 }
 
 func (g *Graphic) ToEscapeCode() string {
 	codes := []string{}
 	if g.Bold {
 		codes = append(codes, bold)
+	}
+	if g.Italic {
+		codes = append(codes, italic)
+	}
+	if g.Underline {
+		codes = append(codes, underline)
 	}
 	if g.Reverse {
 		codes = append(codes, reverse)

@@ -6,10 +6,11 @@ import (
 )
 
 type CloudProvider struct {
-	UUID     string
-	Name     string
-	Children []tree.TreeHandler
-	expanded bool
+	UUID                    string
+	Name                    string
+	Children                []tree.TreeHandler
+	expanded                bool
+	highlightMatchedIndexes []int
 }
 
 var _ tree.TreeHandler = (*CloudProvider)(nil)
@@ -33,6 +34,14 @@ func (c *CloudProvider) GetChildren() []tree.TreeHandler {
 func (c *CloudProvider) GetChildrenByName(name string) []tree.TreeHandler {
 	//TODO implement me
 	panic("implement me")
+}
+
+func (c *CloudProvider) GetHighlightMatchedIndexes() []int {
+	return c.highlightMatchedIndexes
+}
+
+func (c *CloudProvider) SetHighlightMatchedIndexes(ints []int) {
+	c.highlightMatchedIndexes = ints
 }
 
 func (c *CloudProvider) HasPreview() bool {

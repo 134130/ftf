@@ -35,7 +35,9 @@ const (
 	resetGraphics = csi + "m"
 
 	bold      = "1"
-	faint     = "2"
+	faint     = "2" // Not widely supported.
+	italic    = "3" // Not widely supported. Sometimes treated as inverse.
+	underline = "4"
 	reverse   = "7"
 	nobold    = "21"
 	nofaint   = "22"

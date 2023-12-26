@@ -239,7 +239,7 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 				} else {
 					for _, view := range views {
 						if cmd, ok := view.Commands()[cmdKey]; ok {
-							err := cmd(t)
+							err := cmd(t, event.Value)
 							if err != nil {
 								return t.flag, err
 							}

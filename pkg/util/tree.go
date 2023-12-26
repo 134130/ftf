@@ -5,12 +5,12 @@ import (
 )
 
 func TraverseTree(t tree.TreeHandler, f func(tree.TreeHandler, int) error) error {
-	type treeWithDepth struct {
+	type treeToDepth struct {
 		tree  tree.TreeHandler
 		depth int
 	}
 
-	stack := []treeWithDepth{{t, 0}}
+	stack := []treeToDepth{{t, 0}}
 	for len(stack) > 0 {
 		current := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
@@ -22,7 +22,7 @@ func TraverseTree(t tree.TreeHandler, f func(tree.TreeHandler, int) error) error
 		if current.tree.IsExpanded() {
 			children := current.tree.GetChildren()
 			for i := len(children) - 1; i >= 0; i-- {
-				stack = append(stack, treeWithDepth{children[i], current.depth + 1})
+				stack = append(stack, treeToDepth{children[i], current.depth + 1})
 			}
 		}
 	}

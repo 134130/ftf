@@ -29,7 +29,7 @@ var _ term.ViewRenderer = (*previewView)(nil)
 
 func (v *previewView) Position(totalRows, totalCols int) term.Position {
 	return term.Position{
-		Top:  1,
+		Top:  3,
 		Left: int(math.Ceil(float64(totalCols)/2.0)) + 1,
 		Rows: totalRows - 1,
 		Cols: int(math.Floor(float64(totalCols) / 2.0)),
@@ -49,10 +49,11 @@ func (v *previewView) Render(p term.Position) []term.LineAppender {
 		v.lastId = v.state.Cursor.GetID()
 		v.scroll = 0
 
-		preview, err := getPreview("cat {}", v.state.Cursor.GetID())
-		if err != nil {
-			preview = err.Error()
-		}
+		preview := fmt.Sprintf("preview of %s", v.state.Cursor.GetName())
+		//preview, err := getPreview("cat {}", v.state.Cursor.GetID())
+		//if err != nil {
+		//	preview = err.Error()
+		//}
 		preview = strings.ReplaceAll(preview, "\t", "    ")
 		v.lastPreview = strings.Split(preview, "\n")
 	}

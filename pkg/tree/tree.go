@@ -6,8 +6,10 @@ type TreeHandler interface {
 	GetParent() TreeHandler
 	GetChildren() []TreeHandler
 	GetChildrenByName(name string) []TreeHandler
+	GetHighlightMatchedIndexes() []int
+	SetHighlightMatchedIndexes([]int)
 	HasPreview() bool
-	Traverse(func(TreeHandler, int) error) error
+	Traverse(func(t TreeHandler, depth int) error) error
 	IsExpanded() bool
 	Expand()
 	Collapse()

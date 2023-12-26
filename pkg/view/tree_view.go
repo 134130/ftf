@@ -4,6 +4,7 @@ import (
 	"github.com/134130/ftf/pkg/config"
 	term "github.com/134130/ftf/pkg/terminal"
 	"github.com/134130/ftf/pkg/tree"
+	"github.com/fatih/color"
 	"math"
 	"slices"
 	"strings"
@@ -29,14 +30,14 @@ var _ term.ViewRenderer = (*treeView)(nil)
 func (v *treeView) Position(totalRows, totalCols int) term.Position {
 	if v.state.Cursor.HasPreview() {
 		return term.Position{
-			Top:  1,
+			Top:  3,
 			Left: 1,
 			Rows: totalRows - 1,
 			Cols: int(math.Ceil(float64(totalCols) / 2.0)),
 		}
 	} else {
 		return term.Position{
-			Top:  1,
+			Top:  3,
 			Left: 1,
 			Rows: totalRows - 1,
 			Cols: totalCols,
@@ -64,6 +65,48 @@ func (v *treeView) Render(pos term.Position) []term.LineAppender {
 	})
 	v.scroll = v.scrollForId(v.state.Cursor.GetID())
 	return lines[v.scroll:]
+}
+
+func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term.LineAppender {
+	line := term.NewLine(maxLength, &term.Graphic{})
+	line.Append(strings.Repeat("  ", indent), &term.Graphic{})
+
+	if node.IsExpanded() {
+		line.Append("▼ ", &term.Graphic{})
+	} else {
+		line.Append("▶ ", &term.Graphic{})
+	}
+
+	name := node.GetName()
+	for i, n := range name {
+		c := color.New()
+
+		if slices.Contains(node.GetHighlightMatchedIndexes(), i) {
+			c.Add(color.FgYellow)
+			c.Add(color.Underline)
+			//if g, ok := v.graphics["tree:highlighted"]; ok {
+			//	graphic.Merge(g)
+			//}
+		}
+
+		if node == v.state.Cursor {
+			c.Add(color.ReverseVideo)
+			//if g, ok := v.graphics["tree:cursor"]; ok {
+			//	graphic.Merge(g)
+			//}
+		}
+
+		if slices.Contains(v.state.Selection, node) {
+			c.Add(color.Bold)
+			//if g, ok := v.graphics["tree:selected"]; ok {
+			//	graphic.Merge(g)
+			//}
+		}
+
+		line.AppendRaw(c.Sprint(string(n)))
+	}
+
+	return line
 }
 
 func (v *treeView) scrollForId(id string) int {
@@ -130,29 +173,4 @@ func (v *treeView) selectPath(helper term.Helper, args ...interface{}) error {
 		v.state.Selection = append(v.state.Selection[:idx], v.state.Selection[idx+1:]...)
 	}
 	return nil
-}
-
-func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term.LineAppender {
-	line := term.NewLine(maxLength, &term.Graphic{})
-	line.Append(strings.Repeat("  ", indent), &term.Graphic{})
-
-	graphic := term.Graphic{}
-	if node == v.state.Cursor {
-		if g, ok := v.graphics["tree:cursor"]; ok {
-			graphic.Merge(g)
-		}
-	}
-	if slices.Contains(v.state.Selection, node) {
-		if g, ok := v.graphics["tree:selected"]; ok {
-			graphic.Merge(g)
-		}
-	}
-
-	if node.IsExpanded() {
-		line.Append("▼ ", &graphic)
-	} else {
-		line.Append("▶ ", &graphic)
-	}
-	line.Append(node.GetName(), &graphic)
-	return line
 }

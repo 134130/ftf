@@ -17,9 +17,9 @@ var (
 		(&term.Event{Symbol: term.Right}).HashKey():            []string{"tree:open", "tree:next"},
 		(&term.Event{Symbol: term.Rune, Value: ' '}).HashKey(): []string{"tree:selectPath"},
 		(&term.Event{Symbol: term.Enter}).HashKey():            []string{"print"},
-		(&term.Event{Symbol: term.Rune, Value: 'q'}).HashKey(): []string{"quit"},
 		(&term.Event{Symbol: term.Escape}).HashKey():           []string{"quit"},
 		(&term.Event{Symbol: term.CtrlC}).HashKey():            []string{"quit"},
+		(&term.Event{Symbol: term.Backspace}).HashKey():        []string{"searchbar:backspace"},
 	}
 	DefaultGraphics = Graphics{
 		"tree:cursor": &term.Graphic{
@@ -28,5 +28,14 @@ var (
 		"tree:selected": &term.Graphic{
 			Bold: true,
 		},
+		"tree:highlighted": &term.Graphic{
+			Underline: true,
+		},
 	}
 )
+
+func init() {
+	for r := '!'; r <= '~'; r++ {
+		DefaultKeyBindings[(&term.Event{Symbol: term.Rune, Value: r}).HashKey()] = []string{"searchbar:append"}
+	}
+}
