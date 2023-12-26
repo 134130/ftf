@@ -71,7 +71,8 @@ func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term
 	line := term.NewLine(maxLength, &term.Graphic{})
 	line.Append(strings.Repeat("  ", indent), &term.Graphic{})
 
-	if node.GetChildren() != nil && len(node.GetChildren()) > 0 {
+	hasChildren := node.GetChildren() != nil && len(node.GetChildren()) > 0
+	if hasChildren {
 		if node.IsExpanded() {
 			line.Append("▼ ", &term.Graphic{})
 		} else {
@@ -82,6 +83,10 @@ func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term
 	name := node.GetName()
 	for i, n := range name {
 		c := color.New()
+
+		if hasChildren {
+			c.Add(color.FgCyan)
+		}
 
 		if slices.Contains(node.GetHighlightMatchedIndexes(), i) {
 			c.Add(color.FgYellow)
