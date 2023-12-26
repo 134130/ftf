@@ -9,6 +9,7 @@ type TreeHandler interface {
 	GetHighlightMatchedIndexes() []int
 	SetHighlightMatchedIndexes([]int)
 	HasPreview() bool
+	GetPreview() string
 	Traverse(func(t TreeHandler, depth int) error) error
 	IsExpanded() bool
 	Expand()

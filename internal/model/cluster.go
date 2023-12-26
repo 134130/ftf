@@ -8,6 +8,7 @@ import (
 type Cluster struct {
 	UUID                    string
 	Name                    string
+	Preview                 string
 	Parent                  tree.TreeHandler
 	Children                []tree.TreeHandler
 	expanded                bool
@@ -47,6 +48,10 @@ func (c *Cluster) SetHighlightMatchedIndexes(ints []int) {
 
 func (c *Cluster) HasPreview() bool {
 	return true
+}
+
+func (c *Cluster) GetPreview() string {
+	return c.Preview
 }
 
 func (c *Cluster) Traverse(f func(tree.TreeHandler, int) error) error {

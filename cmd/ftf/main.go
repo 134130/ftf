@@ -7,8 +7,10 @@ import (
 	"github.com/134130/ftf/pkg/terminal"
 	"github.com/134130/ftf/pkg/tree"
 	"github.com/134130/ftf/pkg/view"
+	"github.com/fatih/color"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"strings"
 )
 
 func main() {
@@ -60,10 +62,18 @@ func getTree() tree.TreeHandler {
 	}
 	cp.Children = append(cp.Children, &cg1)
 
+	c1prev := strings.Builder{}
+	c1prev.WriteString(color.BlueString(" [MySQL] aurora-cluster-1\n\n"))
+	c1prev.WriteString(color.New().Sprint("  host    : mysql.querypie.io\n"))
+	c1prev.WriteString(color.New().Sprint("  port    : 3306\n"))
+	c1prev.WriteString(color.New().Sprint("  username: querypie\n"))
+	c1prev.WriteString(color.New().Sprint("  password: querypie\n"))
+
 	c1 := model.Cluster{
-		UUID:   "5",
-		Name:   "aurora-cluster-1",
-		Parent: &cg1,
+		UUID:    "5",
+		Name:    "aurora-cluster-1",
+		Preview: c1prev.String(),
+		Parent:  &cg1,
 	}
 	cg1.Children = append(cg1.Children, &c1)
 

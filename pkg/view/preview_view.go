@@ -49,11 +49,13 @@ func (v *previewView) Render(p term.Position) []term.LineAppender {
 		v.lastId = v.state.Cursor.GetID()
 		v.scroll = 0
 
-		preview := fmt.Sprintf("preview of %s", v.state.Cursor.GetName())
-		//preview, err := getPreview("cat {}", v.state.Cursor.GetID())
-		//if err != nil {
-		//	preview = err.Error()
-		//}
+		var preview string
+		if v.state.Cursor.HasPreview() {
+			preview = v.state.Cursor.GetPreview()
+		} else {
+			preview = "no preview available"
+		}
+
 		preview = strings.ReplaceAll(preview, "\t", "    ")
 		v.lastPreview = strings.Split(preview, "\n")
 	}

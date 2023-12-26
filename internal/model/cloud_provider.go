@@ -9,6 +9,7 @@ type CloudProvider struct {
 	UUID                    string
 	Name                    string
 	Children                []tree.TreeHandler
+	Preview                 string
 	expanded                bool
 	highlightMatchedIndexes []int
 }
@@ -46,6 +47,10 @@ func (c *CloudProvider) SetHighlightMatchedIndexes(ints []int) {
 
 func (c *CloudProvider) HasPreview() bool {
 	return false
+}
+
+func (c *CloudProvider) GetPreview() string {
+	return c.Preview
 }
 
 func (c *CloudProvider) Traverse(f func(tree.TreeHandler, int) error) error {
