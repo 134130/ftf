@@ -14,6 +14,13 @@ import (
 	"syscall"
 )
 
+type Flag int
+
+const (
+	FlagNone Flag = iota
+	FlagPrint
+)
+
 type Terminal struct {
 	config          *Config
 	originalState   term.State
@@ -25,6 +32,7 @@ type Terminal struct {
 	out             *os.File
 	loop            bool
 	currentRow      int
+	flag            Flag
 }
 
 type Config struct {
@@ -146,7 +154,6 @@ func (t *Terminal) render(views []ViewRenderer) {
 		}
 
 		_ = reflect.TypeOf(view).Name()
-		log.Info().Msgf("Rendering %s", reflect.TypeOf(view).String())
 		lines := view.Render(p)
 		for row := 0; row < p.Rows; row++ {
 			lineRender := &strings.Builder{}
@@ -184,7 +191,7 @@ func (t *Terminal) fetchWinSize() error {
 	return nil
 }
 
-func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer) (err error) {
+func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer) (flag Flag, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("terminal error: %v, stacktrace: %s", r, string(debug.Stack()))
@@ -203,7 +210,7 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 
 	err = t.fetchWinSize()
 	if err != nil {
-		return err
+		return t.flag, err
 	}
 	t.render(views)
 
@@ -219,9 +226,7 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 			t.render(views)
 			log.Debug().Msg("Rerendered.")
 		case event := <-events:
-			log.Debug().Msgf("Event: %v", event)
 			cmdKeys, ok := bindings[event.HashKey()]
-			log.Debug().Msgf("Cmds: %v", cmdKeys)
 			if !ok {
 				continue
 			}
@@ -229,14 +234,14 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 				if cmd, ok := t.getCommands()[cmdKey]; ok {
 					err := cmd(t)
 					if err != nil {
-						return err
+						return t.flag, err
 					}
 				} else {
 					for _, view := range views {
 						if cmd, ok := view.Commands()[cmdKey]; ok {
 							err := cmd(t)
 							if err != nil {
-								return err
+								return t.flag, err
 							}
 							break
 						}
@@ -250,11 +255,16 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 			break
 		}
 	}
-	return err
+	return t.flag, nil
 }
 
 func (t *Terminal) getCommands() map[string]Command {
 	return map[string]Command{
+		"print": func(_ Helper, args ...interface{}) error {
+			t.flag = FlagPrint
+			t.loop = false
+			return nil
+		},
 		"quit": func(_ Helper, args ...interface{}) error {
 			t.loop = false
 			return nil

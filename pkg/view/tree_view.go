@@ -5,6 +5,7 @@ import (
 	term "github.com/134130/ftf/pkg/terminal"
 	"github.com/134130/ftf/pkg/tree"
 	"math"
+	"slices"
 	"strings"
 )
 
@@ -25,7 +26,7 @@ func NewTreeView(graphics config.Graphics, state *term.State) term.ViewRenderer 
 
 var _ term.ViewRenderer = (*treeView)(nil)
 
-func (v treeView) Position(totalRows, totalCols int) term.Position {
+func (v *treeView) Position(totalRows, totalCols int) term.Position {
 	if v.state.Cursor.HasPreview() {
 		return term.Position{
 			Top:  1,
@@ -43,15 +44,15 @@ func (v treeView) Position(totalRows, totalCols int) term.Position {
 	}
 }
 
-func (v treeView) HasBorder() bool {
+func (v *treeView) HasBorder() bool {
 	return false
 }
 
-func (v treeView) ShouldRender() bool {
+func (v *treeView) ShouldRender() bool {
 	return true
 }
 
-func (v treeView) Render(pos term.Position) []term.LineAppender {
+func (v *treeView) Render(pos term.Position) []term.LineAppender {
 	var lines []term.LineAppender
 	v.rows = pos.Rows
 	v.lineById = make(map[string]int)
@@ -65,7 +66,7 @@ func (v treeView) Render(pos term.Position) []term.LineAppender {
 	return lines[v.scroll:]
 }
 
-func (v treeView) scrollForId(id string) int {
+func (v *treeView) scrollForId(id string) int {
 	targetLine := v.lineById[id]
 	if targetLine < v.scroll {
 		return targetLine
@@ -76,17 +77,18 @@ func (v treeView) scrollForId(id string) int {
 	}
 }
 
-func (v treeView) Commands() map[string]term.Command {
+func (v *treeView) Commands() map[string]term.Command {
 	return map[string]term.Command{
-		"tree:prev":   v.prev,
-		"tree:next":   v.next,
-		"tree:open":   v.open,
-		"tree:close":  v.close,
-		"tree:parent": v.parent,
+		"tree:prev":       v.prev,
+		"tree:next":       v.next,
+		"tree:open":       v.open,
+		"tree:close":      v.close,
+		"tree:parent":     v.parent,
+		"tree:selectPath": v.selectPath,
 	}
 }
 
-func (v treeView) prev(helper term.Helper, args ...interface{}) error {
+func (v *treeView) prev(helper term.Helper, args ...interface{}) error {
 	prev := v.state.Cursor.Prev()
 	if prev != nil {
 		v.state.Cursor = prev
@@ -94,7 +96,7 @@ func (v treeView) prev(helper term.Helper, args ...interface{}) error {
 	return nil
 }
 
-func (v treeView) next(helper term.Helper, args ...interface{}) error {
+func (v *treeView) next(helper term.Helper, args ...interface{}) error {
 	next := v.state.Cursor.Next()
 	if next != nil {
 		v.state.Cursor = next
@@ -102,32 +104,46 @@ func (v treeView) next(helper term.Helper, args ...interface{}) error {
 	return nil
 }
 
-func (v treeView) open(helper term.Helper, args ...interface{}) error {
+func (v *treeView) open(helper term.Helper, args ...interface{}) error {
 	v.state.Cursor.Expand()
 	return nil
 }
 
-func (v treeView) close(helper term.Helper, args ...interface{}) error {
+func (v *treeView) close(helper term.Helper, args ...interface{}) error {
 	v.state.Cursor.Collapse()
 	return nil
 }
 
-func (v treeView) parent(helper term.Helper, args ...interface{}) error {
+func (v *treeView) parent(helper term.Helper, args ...interface{}) error {
 	parent := v.state.Cursor.GetParent()
 	if parent != nil {
 		v.state.Cursor = parent
 	}
-
 	return nil
 }
 
-func (v treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term.LineAppender {
+func (v *treeView) selectPath(helper term.Helper, args ...interface{}) error {
+	idx := slices.Index(v.state.Selection, v.state.Cursor)
+	if idx == -1 {
+		v.state.Selection = append(v.state.Selection, v.state.Cursor)
+	} else {
+		v.state.Selection = append(v.state.Selection[:idx], v.state.Selection[idx+1:]...)
+	}
+	return nil
+}
+
+func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term.LineAppender {
 	line := term.NewLine(maxLength, &term.Graphic{})
 	line.Append(strings.Repeat("  ", indent), &term.Graphic{})
 
 	graphic := term.Graphic{}
 	if node == v.state.Cursor {
 		if g, ok := v.graphics["tree:cursor"]; ok {
+			graphic.Merge(g)
+		}
+	}
+	if slices.Contains(v.state.Selection, node) {
+		if g, ok := v.graphics["tree:selected"]; ok {
 			graphic.Merge(g)
 		}
 	}

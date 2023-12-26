@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/134130/ftf/internal/model"
 	"github.com/134130/ftf/pkg/config"
 	"github.com/134130/ftf/pkg/terminal"
@@ -28,16 +29,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer t.Close()
 
-	for s2, strings := range config.DefaultKeyBindings {
-		log.Info().Str("key", s2).Strs("commands", strings).Msg("key binding")
-	}
-
-	err = t.StartLoop(config.DefaultKeyBindings, views)
+	flag, err := t.StartLoop(config.DefaultKeyBindings, views)
 	if err != nil {
 		panic(err)
 	}
-	defer t.Close()
+	t.Close()
+
+	if flag == terminal.FlagPrint {
+		for _, sel := range s.Selection {
+			fmt.Println(sel.GetName())
+		}
+	}
 
 	log.Info().Msg("bye")
 }

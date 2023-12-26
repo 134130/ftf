@@ -2,7 +2,6 @@ package terminal
 
 import (
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"io"
 	"unicode/utf8"
 )
@@ -112,7 +111,6 @@ func readEvents(r io.Reader, out chan Event, next chan bool) {
 			return
 		}
 		in = in[:n]
-		log.Debug().Msgf("Input bytes: %v", in)
 
 		for len(in) > 0 {
 			if in[0] == Escape {

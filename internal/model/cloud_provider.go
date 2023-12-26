@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/134130/ftf/internal/util"
 	"github.com/134130/ftf/pkg/tree"
+	"github.com/134130/ftf/pkg/util"
 )
 
 type CloudProvider struct {
