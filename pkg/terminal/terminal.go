@@ -191,7 +191,7 @@ func (t *Terminal) fetchWinSize() error {
 	return nil
 }
 
-func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer) (flag Flag, err error) {
+func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer, rerender chan bool) (flag Flag, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("terminal error: %v, stacktrace: %s", r, string(debug.Stack()))
@@ -220,6 +220,10 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer)
 		case <-intSigs:
 			log.Debug().Msg("Received interrupt.")
 			t.loop = false
+		case <-rerender:
+			log.Debug().Msg("Received rerender.")
+			t.render(views)
+			log.Debug().Msg("Rerendered.")
 		case <-winChSig:
 			log.Debug().Msg("Received window change.")
 			t.fetchWinSize()

@@ -84,23 +84,14 @@ func (v *treeView) renderNode(node tree.TreeHandler, indent, maxLength int) term
 		if slices.Contains(node.GetHighlightMatchedIndexes(), i) {
 			c.Add(color.FgYellow)
 			c.Add(color.Underline)
-			//if g, ok := v.graphics["tree:highlighted"]; ok {
-			//	graphic.Merge(g)
-			//}
 		}
 
 		if node == v.state.Cursor {
-			c.Add(color.ReverseVideo)
-			//if g, ok := v.graphics["tree:cursor"]; ok {
-			//	graphic.Merge(g)
-			//}
+			c.Add(color.BgHiBlack)
 		}
 
 		if slices.Contains(v.state.Selection, node) {
 			c.Add(color.Bold)
-			//if g, ok := v.graphics["tree:selected"]; ok {
-			//	graphic.Merge(g)
-			//}
 		}
 
 		line.AppendRaw(c.Sprint(string(n)))

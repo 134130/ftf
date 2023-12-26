@@ -16,10 +16,12 @@ import (
 func main() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
+	rerender := make(chan bool, 1)
 	tr := getTree()
 	s := terminal.State{
-		Root:   tr,
-		Cursor: tr,
+		Root:     tr,
+		Cursor:   tr,
+		Rerender: rerender,
 	}
 	treeView := view.NewTreeView(config.DefaultGraphics, &s)
 	previewView := view.NewPreviewView(config.DefaultGraphics, &s)
@@ -34,7 +36,7 @@ func main() {
 	}
 	defer t.Close()
 
-	flag, err := t.StartLoop(config.DefaultKeyBindings, views)
+	flag, err := t.StartLoop(config.DefaultKeyBindings, views, rerender)
 	if err != nil {
 		panic(err)
 	}

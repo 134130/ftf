@@ -7,4 +7,5 @@ type State struct {
 	Cursor       tree.TreeHandler
 	Selection    []tree.TreeHandler
 	SearchString string
+	Rerender     chan bool
 }

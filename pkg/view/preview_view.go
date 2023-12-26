@@ -1,11 +1,9 @@
 package view
 
 import (
-	"fmt"
 	"github.com/134130/ftf/pkg/config"
 	term "github.com/134130/ftf/pkg/terminal"
 	"math"
-	"os/exec"
 	"strings"
 )
 
@@ -51,7 +49,13 @@ func (v *previewView) Render(p term.Position) []term.LineAppender {
 
 		var preview string
 		if v.state.Cursor.HasPreview() {
-			preview = v.state.Cursor.GetPreview()
+			preview = "loading..."
+			go func() {
+				preview = v.state.Cursor.GetPreview()
+				v.state.Rerender <- true
+				preview = strings.ReplaceAll(preview, "\t", "    ")
+				v.lastPreview = strings.Split(preview, "\n")
+			}()
 		} else {
 			preview = "no preview available"
 		}
@@ -75,21 +79,8 @@ func (v *previewView) Render(p term.Position) []term.LineAppender {
 		termLine.AppendRaw(lines[i])
 		termLines = append(termLines, termLine)
 	}
-	return termLines
-}
 
-func getPreview(cmdTemplate string, path string) (string, error) {
-	//return "preview", nil
-	var stdout, stderr strings.Builder
-	preview := exec.Command("bash", "-c", "cat /Users/cooper/.ssh/chequer-dev.pem")
-	preview.Stdout = &stdout
-	preview.Stderr = &stderr
-	err := preview.Run()
-	if err != nil {
-		return stdout.String(), fmt.Errorf("%w %s", err, stderr.String())
-	} else {
-		return stdout.String(), nil
-	}
+	return termLines
 }
 
 func (v *previewView) Commands() map[string]term.Command {
