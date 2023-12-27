@@ -95,6 +95,7 @@ func (t *Terminal) revertTerm() {
 
 func (t *Terminal) Close() {
 	t.out.WriteString(eraseDisplayEnd)
+	t.out.WriteString("\n")
 	t.revertTerm()
 	t.in.Close()
 	t.out.Close()
@@ -200,17 +201,17 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer,
 
 	intSigs := make(chan os.Signal, 1)
 	signal.Notify(intSigs, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(intSigs)
 	defer close(intSigs)
 
 	winChSig := make(chan os.Signal, 1)
 	signal.Notify(winChSig, syscall.SIGWINCH)
+	defer signal.Stop(winChSig)
 	defer close(winChSig)
 
 	events := make(chan Event)
 	nextEvents := make(chan bool)
 	go readEvents(t.in, events, nextEvents)
-	defer close(events)
-	defer close(nextEvents)
 
 	err = t.fetchWinSize()
 	if err != nil {
