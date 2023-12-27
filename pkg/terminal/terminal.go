@@ -200,13 +200,17 @@ func (t *Terminal) StartLoop(bindings map[string][]string, views []ViewRenderer,
 
 	intSigs := make(chan os.Signal, 1)
 	signal.Notify(intSigs, syscall.SIGINT, syscall.SIGTERM)
+	defer close(intSigs)
 
 	winChSig := make(chan os.Signal, 1)
 	signal.Notify(winChSig, syscall.SIGWINCH)
+	defer close(winChSig)
 
 	events := make(chan Event)
 	nextEvents := make(chan bool)
 	go readEvents(t.in, events, nextEvents)
+	defer close(events)
+	defer close(nextEvents)
 
 	err = t.fetchWinSize()
 	if err != nil {
