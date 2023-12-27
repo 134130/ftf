@@ -56,7 +56,6 @@ func OpenTerm(config *Config) (*Terminal, error) {
 }
 
 func (t *Terminal) initTerm() error {
-
 	state, err := term.MakeRaw(int(t.out.Fd()))
 	if err != nil {
 		return err
@@ -94,8 +93,13 @@ func (t *Terminal) revertTerm() {
 }
 
 func (t *Terminal) Close() {
-	t.out.WriteString(eraseDisplayEnd)
-	t.out.WriteString("\n")
+	t.out.WriteString("\x1b(B\x1b[m")
+	t.out.WriteString("\x1b[39;49m")
+	t.out.WriteString("\x1b[H\x1b[2J")
+	t.out.WriteString("\x1b[H\x1b[2J")
+	t.out.WriteString("\x1b[?1049l\x1b[23;0;0t")
+	t.out.WriteString("\x1b[?1049l\x1b[23;0;0t")
+	t.out.WriteString("\x1b[?1l\x1b>")
 	t.revertTerm()
 	t.in.Close()
 	t.out.Close()
